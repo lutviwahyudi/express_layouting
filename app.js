@@ -2,11 +2,20 @@ const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 const app = express()
 const port = 3000
-
+const { loadContact, findContact } = require('./utils/contact')
 // gunakan ejs
 app.set('view engine', 'ejs')
 
 app.use(expressLayouts)
+
+// app.use((req, res, next) => {
+//   console.log('time : ', Date.now())
+//   next()
+// })
+// app.use((req, res, next) => {
+//   console.log('ini midleware')
+//   next()
+// })
 
 app.get('/', (req, res) => {
 
@@ -33,22 +42,30 @@ app.get('/', (req, res) => {
     title: 'halaman home', 
     mahasiswa})
 })
+
 app.get('/about', (req, res) => {
   res.render('about', {
     layout: 'layouts/main-layout'
   })
 })
+
 app.get('/contact', (req, res) => {
+  const contacts = loadContact()
   res.render('contact', {
-    layout: 'layouts/main-layout'
+    layout: 'layouts/main-layout',
+    contacts
   })
 })
 
-app.get('/produk/:id', (req, res) => {
-  res.send('Product ID :' + req.params.id)
+app.get('/contact/:nama', (req, res) => {
+  const contact = findContact(req.params.nama)
+  res.render('detail', {
+    layout: 'layouts/main-layout',
+    contact
+  })
 })
 
-app.use('/', (req, res) => {
+app.use((req, res) => {
     res.status(404)
     res.send('<h1>404</h1>')
 })
